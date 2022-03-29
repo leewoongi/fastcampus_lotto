@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import org.w3c.dom.Text
 
@@ -20,12 +21,12 @@ class MainActivity : AppCompatActivity() {
 
     private val numberTextViewList: List<TextView> by lazy{
         listOf<TextView>(
-                findViewById<TextView>(R.id.tv_first_number),
-                findViewById<TextView>(R.id.tv_second_number),
-                findViewById<TextView>(R.id.tv_third_number),
-                findViewById<TextView>(R.id.tv_fourth_number),
-                findViewById<TextView>(R.id.tv_fifth_number),
-                findViewById<TextView>(R.id.tv_sixth_number),
+                findViewById(R.id.tv_first_number),
+                findViewById(R.id.tv_second_number),
+                findViewById(R.id.tv_third_number),
+                findViewById(R.id.tv_fourth_number),
+                findViewById(R.id.tv_fifth_number),
+                findViewById(R.id.tv_sixth_number),
         )
     }
 
@@ -61,6 +62,8 @@ class MainActivity : AppCompatActivity() {
                 val textView = numberTextViewList[index]
                 textView.text = number.toString()
                 textView.isVisible = true
+
+                setNumberBackground(number, textView)
             }
         }
     }
@@ -81,17 +84,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun initAddButton() {
         addButton.setOnClickListener {
-            if(didRun){
+            if(isRun()){
                 Toast.makeText(this, "초기화 후에 시도해주세요.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
-            if(pickNumberSet.size >= 6){
+            if(isPickNumberSizeSix()){
                 Toast.makeText(this, "번호는 6개까지만 선택 할 수 있습니다.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
-            if(pickNumberSet.contains(numberPicker.value)){
+            if(isContainSameNumber()){
                 Toast.makeText(this, "이미 선택한 번호 입니다.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
@@ -99,8 +102,22 @@ class MainActivity : AppCompatActivity() {
             val textView = numberTextViewList[pickNumberSet.size]
             textView.isVisible = true
             textView.text = numberPicker.value.toString()
+
+            setNumberBackground(numberPicker.value, textView)
             pickNumberSet.add(numberPicker.value)
         }
+    }
+
+    private fun isRun(): Boolean {
+        return didRun
+    }
+
+    private fun isPickNumberSizeSix(): Boolean {
+        return pickNumberSet.size >= 6
+    }
+
+    private fun isContainSameNumber(): Boolean {
+        return pickNumberSet.contains(numberPicker.value)
     }
 
     private fun initClear(){
@@ -111,5 +128,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         didRun = false
+    }
+
+    private fun setNumberBackground(number: Int, textView: TextView){
+        when(number){
+            in 1..10 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_yellow)
+            in 11..20 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_blue)
+            in 21..30 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_red)
+            in 31..40 -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_gray)
+            else -> textView.background = ContextCompat.getDrawable(this, R.drawable.circle_green)
+        }
     }
 }
